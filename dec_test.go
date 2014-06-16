@@ -5,7 +5,6 @@
 package decimal
 
 import (
-	"fmt"
 	"strconv"
 	"testing"
 )
@@ -360,21 +359,4 @@ func TestSetFloat64(t *testing.T) {
 			t.Errorf("expecting %f got %f", v, f)
 		}
 	}
-}
-
-func ExampleDec_SetString() {
-	d := new(Dec)
-	d.SetString("-12.34")
-	fmt.Println(d)
-	// Output:
-	// -12.34
-}
-
-func ExampleDec_SetBytes() {
-	d := new(Dec)
-	bytes := []byte("+12.34")
-	d.SetBytes(bytes)
-	fmt.Println(d)
-	// Output:
-	// 12.34
 }

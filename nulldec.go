@@ -70,6 +70,14 @@ func (d *NullDec) SetDec(x *Dec) *NullDec {
 	return d
 }
 
+// Dec returns d.
+func (d *NullDec) Dec() *Dec {
+	if d.Null() {
+		return nil
+	}
+	return &d.dec
+}
+
 // Set sets d to x and returns d.
 func (d *NullDec) Set(x *NullDec) *NullDec {
 	d.valid = x.valid

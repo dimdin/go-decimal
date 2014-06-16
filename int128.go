@@ -285,6 +285,123 @@ func divmod(u, v, q, r *Int128) {
 	}
 }
 
+func leadingZeros(x uint32) uint {
+	if x == 0 {
+		return 32
+	}
+	var n uint = 0
+	if x <= 0x0000ffff {
+		n += 16
+		x <<= 16
+	}
+	if x <= 0x00ffffff {
+		n += 8
+		x <<= 8
+	}
+	if x <= 0x0fffffff {
+		n += 4
+		x <<= 4
+	}
+	if x <= 0x3fffffff {
+		n += 2
+		x <<= 2
+	}
+	if x <= 0x7fffffff {
+		n++
+	}
+	return n
+}
+
+// Knuth TAOCP 4.3.1 algorithm D
+func divmodD(xu, xv, xq, xr *Int128) {
+	var v, q, r [4]uint64
+	var u [5]uint64
+	u[0] = xu.lo & mask
+	u[1] = xu.lo >> 32
+	u[2] = uint64(xu.hi) & mask
+	u[3] = uint64(xu.hi) >> 32
+	u[4] = 0
+	v[0] = xv.lo & mask
+	v[1] = xv.lo >> 32
+	v[2] = uint64(xv.hi) & mask
+	v[3] = uint64(xv.hi) >> 32
+
+	// D1. Normalize.
+	n := 4
+	for n >= 0 && v[n-1] == 0 {
+		n--
+	}
+	shift := leadingZeros(uint32(v[n-1]))
+	for i := n - 1; i > 0; i-- {
+		v[i] = v[i]<<shift | v[i-1]>>(32-shift)
+	}
+	v[0] <<= shift
+	u[4] = u[3] >> (32 - shift)
+	for i := 3; i > 0; i-- {
+		u[i] = u[i]<<shift | u[i-1]>>(32-shift)
+	}
+	u[0] <<= shift
+
+	var b uint64 = 2 << 32
+	var qhat, rhat, k, t, p uint64
+
+	// D2. Initialize j. D7. Loop on j.
+	for j := 4 - n; j >= 0; j-- {
+		// D3. Calculate qhat.
+		if u[j+n] == v[n-1] {
+			qhat = b - 1
+		} else {
+			qhat = (u[j+n]*b + u[j+n-1]) / v[n-1]
+		}
+		rhat = (u[j+n]*b + u[j+n-1]) - qhat*v[n-1]
+		for v[n-2]*qhat > rhat*b+u[j+n-2] {
+			qhat--
+			rhat += v[n-1]
+		}
+
+		// D4. Multiply and subtract.
+		// u = u - qhat*v
+		// M3. Initialize i.
+		k = 0
+		for i := 0; i < n; i++ {
+			// M4. Multiply and add.
+			p = qhat * v[i]
+			t = u[i+j] - k - (p & mask)
+			u[i+j] = t & mask
+			k = (p >> 32) - t>>32
+		}
+		t = u[j+n] - k
+		u[j+n] = t & mask
+
+		// D5. Test remainder.
+		q[j] = qhat
+		if int64(t) < 0 {
+			// D6. Add back.
+			q[j]--
+			// add v to u
+			k = 0
+			for i := 0; i < n; i++ {
+				t = u[i+j] + v[i] + k
+				u[i+j] = t & mask
+				k = t >> 32
+			}
+			u[j+n] += k
+		}
+	}
+
+	// D8. Unnormalize.
+	for i := 0; i < n-1; i++ {
+		r[i] = u[i]>>shift | u[i+1]<<(32-shift)
+	}
+
+	r[n-1] = u[n-1] >> shift
+	xq.hi = int64(q[2] | (q[3] << 32))
+	xq.lo = q[0] | (q[1] << 32)
+	xr.hi = int64(r[2] | (r[3] << 32))
+	xr.lo = r[0] | (r[1] << 32)
+	return
+}
+
 // Knuth TAOCP 4.3.1 Exercise 16 algorithm
 func divmod32(xu, xv, xq, xr *Int128) {
 	var u, q [4]uint64
@@ -346,10 +463,10 @@ func (z *Int128) DivMod(x, y, r *Int128) (*Int128, *Int128) {
 		return z, r
 	}
 
-	if x.hi == 0 && y.hi == 0 {
-		q.lo = x.lo / y.lo
-		r.lo = x.lo % y.lo
-	} else if y.hi == 0 && (y.lo>>32) == 0 {
+	if u.hi == 0 && v.hi == 0 {
+		q.lo = u.lo / v.lo
+		r.lo = u.lo % v.lo
+	} else if v.hi == 0 && (v.lo>>32) == 0 {
 		divmod32(&u, &v, &q, r)
 	} else {
 		divmod(&u, &v, &q, r)

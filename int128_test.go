@@ -318,7 +318,7 @@ func TestRandIntDiv128(t *testing.T) {
 	tx.Mul(&q, &y)
 	tx.Add(&tx, &r)
 	if tx.Cmp(&x) != 0 {
-		t.Errorf("Invalid division %d,%d / %d,%d got %d,%d rem %d,%d", x.lo, x.hi, y.lo, y.hi, q.lo, q.hi, r.lo, r.hi)
+		t.Errorf("Invalid division %s / %s got q=%s r=%s", x, y, q, r)
 	}
 }
 
@@ -432,8 +432,8 @@ func TestDivision(t *testing.T) {
 		q.DivMod(&u, &v, &r)
 		if q.lo != a.qlo || q.hi != int64(a.qhi) ||
 			r.lo != a.rlo || r.hi != int64(a.rhi) {
-			t.Errorf("Failed %d got q=%x,%x r=%x,%x expecting q=%x,%x r=%x,%x", i,
-				q.lo, q.hi, r.lo, r.hi, a.qlo, a.qhi, a.rlo, a.rhi)
+			t.Errorf("Failed %d %s / %s got q=%s r=%s", i,
+				u, v, q, r)
 		}
 	}
 

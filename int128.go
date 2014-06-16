@@ -320,7 +320,6 @@ func divmodD(xu, xv, xq, xr *Int128) {
 	u[1] = xu.lo >> 32
 	u[2] = uint64(xu.hi) & mask
 	u[3] = uint64(xu.hi) >> 32
-	u[4] = 0
 	v[0] = xv.lo & mask
 	v[1] = xv.lo >> 32
 	v[2] = uint64(xv.hi) & mask
@@ -332,15 +331,15 @@ func divmodD(xu, xv, xq, xr *Int128) {
 		n--
 	}
 	shift := leadingZeros(uint32(v[n-1]))
-	for i := n - 1; i > 0; i-- {
-		v[i] = v[i]<<shift | v[i-1]>>(32-shift)
-	}
-	v[0] <<= shift
 	u[4] = u[3] >> (32 - shift)
 	for i := 3; i > 0; i-- {
 		u[i] = u[i]<<shift | u[i-1]>>(32-shift)
 	}
 	u[0] <<= shift
+	for i := n - 1; i > 0; i-- {
+		v[i] = v[i]<<shift | v[i-1]>>(32-shift)
+	}
+	v[0] <<= shift
 
 	var b uint64 = 2 << 32
 	var qhat, rhat, k, t, p uint64
@@ -357,6 +356,9 @@ func divmodD(xu, xv, xq, xr *Int128) {
 		for v[n-2]*qhat > rhat*b+u[j+n-2] {
 			qhat--
 			rhat += v[n-1]
+			if rhat >= b {
+				break
+			}
 		}
 
 		// D4. Multiply and subtract.
@@ -364,7 +366,7 @@ func divmodD(xu, xv, xq, xr *Int128) {
 		// M3. Initialize i.
 		k = 0
 		for i := 0; i < n; i++ {
-			// M4. Multiply and add.
+			// M4. Multiply and subtract.
 			p = qhat * v[i]
 			t = u[i+j] - k - (p & mask)
 			u[i+j] = t & mask

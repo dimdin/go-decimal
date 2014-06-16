@@ -257,40 +257,6 @@ func (z *Int128) Mul(x, y *Int128) *Int128 {
 	return z
 }
 
-func bits(x *Int128) (b uint) {
-	var w uint64
-	if x.hi != 0 {
-		w = uint64(x.hi)
-		b = 64
-	} else {
-		w = x.lo
-	}
-	for w != 0 {
-		w >>= 1
-		b++
-	}
-	return
-}
-
-// slow unsigned integer division
-// TODO replace with Knuth algorithm D
-func divmod(u, v, q, r *Int128) {
-	q.lo = 0
-	q.hi = 0
-	r.lo = 0
-	r.hi = 0
-	n := bits(u)
-	var i int
-	for i = int(n) - 1; i >= 0; i-- {
-		r.Lsh(r, 1)
-		r.SetBit(r, 0, u.Bit(i))
-		if r.Cmp(v) >= 0 {
-			r.Sub(r, v)
-			q.SetBit(q, i, 1)
-		}
-	}
-}
-
 func leadingZeros(x uint32) uint {
 	if x == 0 {
 		return 32
@@ -319,17 +285,17 @@ func leadingZeros(x uint32) uint {
 }
 
 // Knuth TAOCP 4.3.1 algorithm D
-func divmodD(xu, xv, xq, xr *Int128) {
-	var v, q, r [4]uint64
-	var u [5]uint64
-	u[0] = xu.lo & mask
-	u[1] = xu.lo >> 32
-	u[2] = uint64(xu.hi) & mask
-	u[3] = uint64(xu.hi) >> 32
-	v[0] = xv.lo & mask
-	v[1] = xv.lo >> 32
-	v[2] = uint64(xv.hi) & mask
-	v[3] = uint64(xv.hi) >> 32
+func divmod(xu, xv, xq, xr *Int128) {
+	var v, q, r [4]uint32
+	var u [5]uint32
+	u[0] = uint32(xu.lo & mask)
+	u[1] = uint32(xu.lo >> 32)
+	u[2] = uint32(uint64(xu.hi) & mask)
+	u[3] = uint32(uint64(xu.hi) >> 32)
+	v[0] = uint32(xv.lo & mask)
+	v[1] = uint32(xv.lo >> 32)
+	v[2] = uint32(uint64(xv.hi) & mask)
+	v[3] = uint32(uint64(xv.hi) >> 32)
 
 	// D1. Normalize.
 	n := 4
@@ -347,7 +313,7 @@ func divmodD(xu, xv, xq, xr *Int128) {
 	}
 	v[0] <<= shift
 
-	var b uint64 = 2 << 32
+	var b uint64 = 1 << 32
 	var qhat, rhat, k, t, p uint64
 
 	// D2. Initialize j. D7. Loop on j.
@@ -356,44 +322,42 @@ func divmodD(xu, xv, xq, xr *Int128) {
 		if u[j+n] == v[n-1] {
 			qhat = b - 1
 		} else {
-			qhat = (u[j+n]*b + u[j+n-1]) / v[n-1]
+			qhat = (uint64(u[j+n])<<32 + uint64(u[j+n-1])) / uint64(v[n-1])
 		}
-		rhat = (u[j+n]*b + u[j+n-1]) - qhat*v[n-1]
-		for v[n-2]*qhat > rhat*b+u[j+n-2] {
+		rhat = (uint64(u[j+n])<<32 + uint64(u[j+n-1])) - qhat*uint64(v[n-1])
+		for uint64(v[n-2])*qhat > rhat<<32+uint64(u[j+n-2]) {
 			qhat--
-			rhat += v[n-1]
+			rhat += uint64(v[n-1])
 			if rhat >= b {
 				break
 			}
 		}
-
 		// D4. Multiply and subtract.
 		// u = u - qhat*v
 		// M3. Initialize i.
 		k = 0
 		for i := 0; i < n; i++ {
 			// M4. Multiply and subtract.
-			p = qhat * v[i]
-			t = u[i+j] - k - (p & mask)
-			u[i+j] = t & mask
+			p = qhat * uint64(v[i])
+			t = uint64(u[i+j]) - k - (p & mask)
+			u[i+j] = uint32(t & mask)
 			k = (p >> 32) - t>>32
 		}
-		t = u[j+n] - k
-		u[j+n] = t & mask
-
+		var test int64 = int64(u[j+n]) - int64(k)
+		u[j+n] = uint32(t & mask)
 		// D5. Test remainder.
-		q[j] = qhat
-		if int64(t) < 0 {
+		q[j] = uint32(qhat)
+		if test < 0 {
 			// D6. Add back.
 			q[j]--
 			// add v to u
 			k = 0
 			for i := 0; i < n; i++ {
-				t = u[i+j] + v[i] + k
-				u[i+j] = t & mask
+				t = uint64(u[i+j]) + uint64(v[i]) + k
+				u[i+j] = uint32(t & mask)
 				k = t >> 32
 			}
-			u[j+n] += k
+			u[j+n] += uint32(k)
 		}
 	}
 
@@ -401,12 +365,12 @@ func divmodD(xu, xv, xq, xr *Int128) {
 	for i := 0; i < n-1; i++ {
 		r[i] = u[i]>>shift | u[i+1]<<(32-shift)
 	}
-
 	r[n-1] = u[n-1] >> shift
-	xq.hi = int64(q[2] | (q[3] << 32))
-	xq.lo = q[0] | (q[1] << 32)
-	xr.hi = int64(r[2] | (r[3] << 32))
-	xr.lo = r[0] | (r[1] << 32)
+
+	xq.hi = int64(uint64(q[2]) | (uint64(q[3]) << 32))
+	xq.lo = uint64(q[0]) | (uint64(q[1]) << 32)
+	xr.hi = int64(uint64(r[2]) | (uint64(r[3]) << 32))
+	xr.lo = uint64(r[0]) | (uint64(r[1]) << 32)
 	return
 }
 

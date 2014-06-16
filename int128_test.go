@@ -413,15 +413,25 @@ func TestDivision(t *testing.T) {
 		rlo uint64
 		rhi uint64
 	}{
-		{0, 0, 0xffffffff, 0, 0, 0, 0, 0},                   //0
-		{0xffffffff, 0, 1, 0, 0xffffffff, 0, 0, 0},          //1
-		{0xffffffff, 0, 0xffffffff, 0, 1, 0, 0, 0},          //2
-		{0xffffffff, 0, 3, 0, 0x55555555, 0, 0, 0},          //3
-		{0xffffffff, 0xffffffff, 0xffffffff, 0, 1, 1, 0, 0}, //4
-		{0, 0, 0, 1, 0, 0, 0, 0},                            //5
-		{7, 0, 3, 0, 2, 0, 1, 0},                            //6
-		{5, 7, 0, 3, 2, 0, 5, 1},                            //7
-		{0, 6, 0, 2, 3, 0, 0, 0},                            //8
+		{3, 0, 2, 0, 1, 0, 1, 0},                                                       //0
+		{3, 0, 3, 0, 1, 0, 0, 0},                                                       //1
+		{3, 0, 4, 0, 0, 0, 3, 0},                                                       //2
+		{0, 0, 0xffffffff, 0, 0, 0, 0, 0},                                              //3
+		{0xffffffff, 0, 1, 0, 0xffffffff, 0, 0, 0},                                     //4
+		{0xffffffff, 0, 0xffffffff, 0, 1, 0, 0, 0},                                     //5
+		{0xffffffff, 0, 3, 0, 0x55555555, 0, 0, 0},                                     //6
+		{0xffffffff, 0xffffffff, 1, 0, 0xffffffff, 0xffffffff, 0, 0},                   //7
+		{0xffffffff, 0xffffffff, 0xffffffff, 0, 1, 1, 0, 0},                            //8
+		{0, 0, 0, 1, 0, 0, 0, 0},                                                       //9
+		{0, 7, 0, 3, 2, 0, 0, 1},                                                       //10
+		{5, 7, 0, 3, 2, 0, 5, 1},                                                       //11
+		{0, 6, 0, 2, 3, 0, 0, 0},                                                       //12
+		{0x80000000, 0, 0x40000001, 0, 0x00000001, 0, 0x3fffffff, 0},                   //13
+		{0x0000789a, 0x0000bcde, 0x0000789a, 0x0000bcde, 1, 0, 0, 0},                   //14
+		{0x0000789b, 0x0000bcde, 0x0000789a, 0x0000bcde, 1, 0, 1, 0},                   //15
+		{0x00007899, 0x0000bcde, 0x0000789a, 0x0000bcde, 0, 0, 0x00007899, 0x0000bcde}, //16
+		{0x0000ffff, 0x0000ffff, 0x0000ffff, 0x0000ffff, 1, 0, 0, 0},                   //17
+		{0x0000ffff, 0x0000ffff, 0x00000000, 0x00000001, 0x0000ffff, 0, 0x0000ffff, 0}, //18
 	}
 	for i, a := range values {
 		var u, v, q, r Int128

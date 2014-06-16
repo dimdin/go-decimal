@@ -204,18 +204,6 @@ func (d *Dec) Round(scale uint8) *Dec {
 	return d.Div(d, decOne, scale)
 }
 
-// Mod sets d to the modulus x%y and returns d.
-// If y is zero panics with Division by zero.
-// The scale of d is the larger of the scales of the two operands.
-func (d *Dec) Mod(x, y *Dec) *Dec {
-	dx, dy := maxscale(x, y)
-	if d != dx {
-		d.scale = dx.scale
-	}
-	d.coef.Mod(&dx.coef, &dy.coef)
-	return d
-}
-
 // Power sets d = x^n and returns d
 func (d *Dec) Power(x *Dec, n int) *Dec {
 	if n < 0 {

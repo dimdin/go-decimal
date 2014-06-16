@@ -234,19 +234,6 @@ func (d *NullDec) Round(scale uint8) *NullDec {
 	return d
 }
 
-// Mod sets d to the modulus x%y and returns d.
-// If y is zero panics with Division by zero.
-// The scale of d is the larger of the scales of the two operands.
-func (d *NullDec) Mod(x, y *NullDec) *NullDec {
-	if x.Null() || y.Null() {
-		d.SetNull()
-	} else {
-		d.dec.Mod(&x.dec, &y.dec)
-		d.valid = true
-	}
-	return d
-}
-
 // Power sets d = x^n and returns d
 func (d *NullDec) Power(x *NullDec, n int) *NullDec {
 	if x.Null() {

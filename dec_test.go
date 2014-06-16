@@ -264,26 +264,6 @@ func TestDiv(t *testing.T) {
 	}
 }
 
-func TestMod(t *testing.T) {
-	values := []struct {
-		x, y string
-		r    string
-	}{
-		{"10", "5", "0"},
-		{"10", "3", "1"},
-		{"10", "0.3", "0.1"},
-	}
-	for _, a := range values {
-		var x, y, z Dec
-		x.SetString(a.x)
-		y.SetString(a.y)
-		z.Mod(&x, &y)
-		if z.String() != a.r {
-			t.Errorf("%s %% %s got %s want %s", a.x, a.y, z.String(), a.r)
-		}
-	}
-}
-
 func TestPower(t *testing.T) {
 	values := []struct {
 		x string

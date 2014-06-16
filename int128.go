@@ -241,6 +241,12 @@ func mul(x, y, z *Int128) {
 
 // Mul sets z to the product x*y and returns z.
 func (z *Int128) Mul(x, y *Int128) *Int128 {
+	if (x.lo == 0 && x.hi == 0) ||
+		(y.lo == 0 && y.hi == 0) {
+		z.lo = 0
+		z.hi = 0
+		return z
+	}
 	var u, v Int128
 	u.Abs(x)
 	v.Abs(y)

@@ -23,6 +23,7 @@ import "github.com/dimdin/decimal"
     fmt.Println(x)
 ```
 Output:
+
     33.33
 
 ## Features
@@ -31,6 +32,7 @@ Output:
 - Fast addition, subtraction, multiplication and division operations.
 - Can be scanned directly from database/sql query results.
 - Can be used directly in database/sql Query and Exec parameters.
+- math/big naming conventions and compatible operators.
 - Arithmetic half up rounding.
 - Test suite with 90% coverage.
 

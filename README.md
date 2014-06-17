@@ -30,11 +30,12 @@ Output:
 
 - 38 decimal digits precision implemented with an 128 bit integer scaled by a power of ten.
 - Fast addition, subtraction, multiplication, division and power operations.
+- Panics when there is an overflow
 - Can be scanned directly from database/sql query results.
 - Can be used directly in database/sql Query and Exec parameters.
 - math/big naming conventions and compatible operators.
 - Arithmetic half up rounding.
-- Test suite with 90% coverage.
+- Test suite with more than 85% code coverage.
 
 ## License
 

@@ -14,7 +14,7 @@ func BenchmarkAdd(b *testing.B) {
 	x.lo = uint64(rand.Int63())
 	x.hi = rand.Int63()
 	y.lo = uint64(rand.Int63())
-	y.hi = rand.Int63()
+	y.hi = 0
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var z Int128
@@ -27,7 +27,7 @@ func BenchmarkSub(b *testing.B) {
 	x.lo = uint64(rand.Int63())
 	x.hi = rand.Int63()
 	y.lo = uint64(rand.Int63())
-	y.hi = rand.Int63()
+	y.hi = 0
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var z Int128
@@ -38,9 +38,9 @@ func BenchmarkSub(b *testing.B) {
 func BenchmarkMul(b *testing.B) {
 	var x, y Int128
 	x.lo = uint64(rand.Int63())
-	x.hi = rand.Int63()
+	x.hi = 0
 	y.lo = uint64(rand.Int63())
-	y.hi = rand.Int63()
+	y.hi = 0
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var z Int128
@@ -89,10 +89,11 @@ func BenchmarkDiv128(b *testing.B) {
 
 func BenchmarkPower(b *testing.B) {
 	var x Int128
-	x.lo = uint64(rand.Int63())
+	x.lo = uint64(rand.Int63()) % 10
 	x.hi = 0
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		x.Power(&x, 24)
+		var z Int128
+		z.Power(&x, 36)
 	}
 }

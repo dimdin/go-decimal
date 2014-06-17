@@ -15,6 +15,10 @@ var (
 	intTen = &Int128{10, 0}
 )
 
+func overflow() {
+	panic("Overflow")
+}
+
 // SetInt64 sets z to x and returns z.
 func (z *Int128) SetInt64(x int64) *Int128 {
 	z.lo = uint64(x)
@@ -113,10 +117,15 @@ func (z *Int128) Neg(x *Int128) *Int128 {
 // Add sets z to the sum x+y and returns z.
 func (z *Int128) Add(x, y *Int128) *Int128 {
 	lo := x.lo
+	hi := x.hi
+	sameSigns := (x.hi < 0) == (y.hi < 0)
 	z.lo = x.lo + y.lo
 	z.hi = x.hi + y.hi
 	if z.lo < lo {
 		z.hi++
+	}
+	if sameSigns && (hi < 0) != (z.hi < 0) {
+		overflow()
 	}
 	return z
 }
@@ -124,10 +133,15 @@ func (z *Int128) Add(x, y *Int128) *Int128 {
 // Sub sets z to the difference x-y and returns z.
 func (z *Int128) Sub(x, y *Int128) *Int128 {
 	lo := x.lo
+	hi := x.hi
+	oppositeSigns := (x.hi < 0) != (y.hi < 0)
 	z.lo = x.lo - y.lo
 	z.hi = x.hi - y.hi
 	if z.lo > lo {
 		z.hi--
+	}
+	if oppositeSigns && (z.hi < 0) != (hi < 0) {
+		overflow()
 	}
 	return z
 }
@@ -234,6 +248,9 @@ func mul(x, y, z *Int128) {
 			k = t >> 32       // t div b
 		}
 		w[j+4] = k
+	}
+	if w[4] != 0 || w[5] != 0 || w[6] != 0 || w[7] != 0 {
+		overflow()
 	}
 	z.lo = w[0] | (w[1] << 32)
 	z.hi = int64(w[2] | (w[3] << 32))

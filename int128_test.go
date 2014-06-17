@@ -449,6 +449,16 @@ func TestDivision(t *testing.T) {
 
 }
 
+func TestLeadingZeros(t *testing.T) {
+	var x uint32 = (1 << 31)
+	for i := 0; i <= 32; i++ {
+		if int(leadingZeros(x)) != i {
+			t.Errorf("Failed at %x: got %d want %d", x, leadingZeros(x), i)
+		}
+		x >>= 1
+	}
+}
+
 func TestIntPower(t *testing.T) {
 	values := []struct {
 		x int64

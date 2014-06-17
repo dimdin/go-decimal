@@ -214,7 +214,7 @@ func (d *Dec) Power(x *Dec, n int) *Dec {
 		return d.Set(decOne)
 	} else if n == 1 {
 		return d.Set(x)
-	} else if (n % 2) == 0 { // even
+	} else if (n & 1) == 0 { // even
 		d.Mul(x, x)
 		return d.Power(d, n/2)
 	}

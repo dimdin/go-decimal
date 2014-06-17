@@ -475,7 +475,7 @@ func (z *Int128) Power(x *Int128, n uint) *Int128 {
 		return z.Set(intOne)
 	} else if n == 1 {
 		return z.Set(x)
-	} else if (n % 2) == 0 { // even
+	} else if (n & 1) == 0 { // even
 		z.Mul(x, x)
 		return z.Power(z, n/2)
 	}

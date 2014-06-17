@@ -86,3 +86,13 @@ func BenchmarkDiv128(b *testing.B) {
 		z.Div(&x, &y)
 	}
 }
+
+func BenchmarkPower(b *testing.B) {
+	var x Int128
+	x.lo = uint64(rand.Int63())
+	x.hi = 0
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		x.Power(&x, 24)
+	}
+}

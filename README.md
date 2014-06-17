@@ -29,7 +29,7 @@ Output:
 ## Features
 
 - 38 decimal digits precision implemented with an 128 bit integer scaled by a power of ten.
-- Fast addition, subtraction, multiplication and division operations.
+- Fast addition, subtraction, multiplication, division and power operations.
 - Can be scanned directly from database/sql query results.
 - Can be used directly in database/sql Query and Exec parameters.
 - math/big naming conventions and compatible operators.

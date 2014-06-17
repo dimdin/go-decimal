@@ -9,6 +9,16 @@ import (
 	"testing"
 )
 
+func TestPi(t *testing.T) {
+	// 38 digits of π
+	pi := "3.1415926535897932384626433832795028842"
+	var d Dec
+	d.SetString(pi)
+	if d.String() != pi {
+		t.Errorf("Failed, expected %s got %s", pi, d.String())
+	}
+}
+
 func TestSign(t *testing.T) {
 	values := []struct {
 		x string

@@ -194,3 +194,29 @@ func ExampleNullDec_Div() {
 	// Output:
 	// 33.33
 }
+
+func ExampleInt128() {
+	var i Int128
+	i.SetInt64(-1)
+	fmt.Println(i)
+	// Output:
+	// -1
+}
+
+func ExampleInt128_Lsh() {
+	var i Int128
+	i.SetInt64(1)
+	i.Lsh(&i, 64)
+	fmt.Println(i)
+	// Output:
+	// 18446744073709551616
+}
+
+func ExampleInt128_Rsh() {
+	var i Int128
+	i.SetBit(&i, 64, 1)
+	i.Rsh(&i, 64)
+	fmt.Println(i)
+	// Output:
+	// 1
+}

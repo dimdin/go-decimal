@@ -5,7 +5,6 @@
 package decimal
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"testing"
@@ -566,30 +565,4 @@ func BenchmarkDiv128(b *testing.B) {
 		var z Int128
 		z.Div(&x, &y)
 	}
-}
-
-func ExampleInt128() {
-	var i Int128
-	i.SetInt64(-1)
-	fmt.Println(i)
-	// Output:
-	// -1
-}
-
-func ExampleInt128_Lsh() {
-	var i Int128
-	i.SetInt64(1)
-	i.Lsh(&i, 64)
-	fmt.Println(i)
-	// Output:
-	// 18446744073709551616
-}
-
-func ExampleInt128_Rsh() {
-	var i Int128
-	i.SetBit(&i, 64, 1)
-	i.Rsh(&i, 64)
-	fmt.Println(i)
-	// Output:
-	// 1
 }

@@ -502,6 +502,9 @@ func (i Int128) Bytes() []byte {
 		dec.DivMod(&dec, intTen, &z)
 		digits = append(digits, byte(z.Int64()+'0'))
 	}
+	if len(digits) == 0 {
+		return []byte{'0'}
+	}
 	dst := make([]byte, 0, len(digits)+1)
 	if i.Sign() < 0 {
 		dst = append(dst, '-')

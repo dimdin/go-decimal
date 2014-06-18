@@ -4,8 +4,6 @@
 
 package decimal
 
-import "math"
-
 // Int128 is a 128 bit signed integer.
 type Int128 struct {
 	lo uint64
@@ -118,30 +116,32 @@ func (z *Int128) Neg(x *Int128) *Int128 {
 
 // Add sets z to the sum x+y and returns z.
 func (z *Int128) Add(x, y *Int128) *Int128 {
-	if (y.hi > 0 && x.hi > (math.MaxInt64-y.hi)) ||
-		(y.hi < 0 && x.hi < (math.MinInt64-y.hi)) {
-		overflow()
-	}
 	lo := x.lo
+	xneg := x.hi < 0
+	yneg := y.hi < 0
 	z.lo = x.lo + y.lo
 	z.hi = x.hi + y.hi
 	if z.lo < lo {
 		z.hi++
+	}
+	if xneg == yneg && xneg != (z.hi < 0) {
+		overflow()
 	}
 	return z
 }
 
 // Sub sets z to the difference x-y and returns z.
 func (z *Int128) Sub(x, y *Int128) *Int128 {
-	if (y.hi > 0 && x.hi < (math.MinInt64+y.hi)) ||
-		(y.hi < 0 && x.hi > (math.MaxInt64+y.hi)) {
-		overflow()
-	}
 	lo := x.lo
+	xneg := x.hi < 0
+	yneg := y.hi < 0
 	z.lo = x.lo - y.lo
 	z.hi = x.hi - y.hi
 	if z.lo > lo {
 		z.hi--
+	}
+	if xneg != yneg && xneg != (z.hi < 0) {
+		overflow()
 	}
 	return z
 }

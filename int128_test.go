@@ -489,3 +489,57 @@ func TestIntPower(t *testing.T) {
 		}
 	}
 }
+
+func paniced(f func()) (b bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			b = true
+		}
+	}()
+	f()
+	return
+}
+
+func TestMulOverflow(t *testing.T) {
+	if !paniced(func() {
+		var x Int128
+		x.Set(intOne)
+		for i := 0; i <= 38; i++ {
+			x.Mul(&x, intTen)
+		}
+	}) {
+		t.Errorf("failed to overflow mul")
+	}
+}
+
+func TestDivZero(t *testing.T) {
+	if !paniced(func() {
+		var x, y Int128
+		x.Set(intOne)
+		x.Div(&x, &y)
+	}) {
+		t.Errorf("failed to divide by zero")
+	}
+}
+
+func TestAddOverflow(t *testing.T) {
+	if !paniced(func() {
+		var x Int128
+		x.lo = math.MaxUint64
+		x.hi = math.MaxInt64
+		x.Add(&x, intOne)
+	}) {
+		t.Errorf("failed to overflow add")
+	}
+}
+
+func TestSubOverflow(t *testing.T) {
+	if !paniced(func() {
+		var x Int128
+		x.lo = 0
+		x.hi = math.MinInt64
+		x.Sub(&x, intOne)
+	}) {
+		t.Errorf("failed to overflow sub")
+	}
+}

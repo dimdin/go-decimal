@@ -19,7 +19,7 @@ func TestPi(t *testing.T) {
 	}
 }
 
-func TestSetStringErrors(t *testing.T) {
+func TestSetErrors(t *testing.T) {
 	values := []string{
 		"",
 		"x",
@@ -29,12 +29,17 @@ func TestSetStringErrors(t *testing.T) {
 		"1x",
 		".x",
 		".0x",
+		"..",
 	}
 	var d Dec
 	for _, v := range values {
 		err := d.SetString(v)
 		if err == nil {
 			t.Errorf("Failed, expected error for SetString %s", v)
+		}
+		err = d.SetBytes([]byte(v))
+		if err == nil {
+			t.Errorf("Failed, expected error for SetBytes %s", v)
 		}
 	}
 }

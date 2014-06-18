@@ -9,6 +9,23 @@ import (
 	"testing"
 )
 
+func TestSetBytes(t *testing.T) {
+	values := [][]byte{
+		nil,
+		[]byte("0"),
+		[]byte("10"),
+		[]byte("-1"),
+	}
+	for _, a := range values {
+		var x NullDec
+		x.SetBytes(a)
+		v := x.Bytes()
+		if string(v) != string(a) {
+			t.Errorf("Failed to SetBytes %s, got %s", string(a), string(v))
+		}
+	}
+}
+
 func TestNullSign(t *testing.T) {
 	values := []struct {
 		x string

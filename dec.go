@@ -323,7 +323,7 @@ func (d *Dec) scan(r io.RuneScanner) error {
 	for {
 		ch, _, err = r.ReadRune()
 		if err == io.EOF {
-			break
+			goto ExitLoop
 		}
 		if err != nil {
 			return err
@@ -332,7 +332,7 @@ func (d *Dec) scan(r io.RuneScanner) error {
 		case ch == '.':
 			if dec {
 				r.UnreadRune()
-				break
+				goto ExitLoop
 			}
 			dec = true
 		case ch >= '0' && ch <= '9':
@@ -345,9 +345,10 @@ func (d *Dec) scan(r io.RuneScanner) error {
 			}
 		default:
 			r.UnreadRune()
-			break
+			goto ExitLoop
 		}
 	}
+ExitLoop:
 	if neg {
 		d.Neg(d)
 	}

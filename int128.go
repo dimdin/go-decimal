@@ -16,7 +16,7 @@ var (
 )
 
 func overflow() {
-	panic("Overflow")
+	panic("Arithmetic overflow")
 }
 
 // SetInt64 sets z to x and returns z.

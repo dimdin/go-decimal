@@ -490,7 +490,7 @@ func TestIntPower(t *testing.T) {
 	}
 }
 
-func paniced(f func()) (b bool) {
+func panics(f func()) (b bool) {
 	defer func() {
 		if r := recover(); r != nil {
 			b = true
@@ -501,7 +501,7 @@ func paniced(f func()) (b bool) {
 }
 
 func TestMulOverflow(t *testing.T) {
-	if !paniced(func() {
+	if !panics(func() {
 		var x Int128
 		x.Set(intOne)
 		for i := 0; i <= 38; i++ {
@@ -513,7 +513,7 @@ func TestMulOverflow(t *testing.T) {
 }
 
 func TestDivZero(t *testing.T) {
-	if !paniced(func() {
+	if !panics(func() {
 		var x, y Int128
 		x.Set(intOne)
 		x.Div(&x, &y)
@@ -523,7 +523,7 @@ func TestDivZero(t *testing.T) {
 }
 
 func TestAddOverflow(t *testing.T) {
-	if !paniced(func() {
+	if !panics(func() {
 		var x Int128
 		x.lo = math.MaxUint64
 		x.hi = math.MaxInt64
@@ -534,7 +534,7 @@ func TestAddOverflow(t *testing.T) {
 }
 
 func TestSubOverflow(t *testing.T) {
-	if !paniced(func() {
+	if !panics(func() {
 		var x Int128
 		x.lo = 0
 		x.hi = math.MinInt64

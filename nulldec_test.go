@@ -280,3 +280,43 @@ func TestNullSetFloat64(t *testing.T) {
 		}
 	}
 }
+
+func TestNullValue(t *testing.T) {
+	var d NullDec
+	x, err := d.Value()
+	if err != nil {
+		t.Errorf("failed to return Value: %s", err.Error())
+	}
+	if x != nil {
+		t.Errorf("failed to return nil Value")
+	}
+	d.SetString("-12.34")
+	x, err = d.Value()
+	if err != nil {
+		t.Errorf("failed to return Value: %s", err.Error())
+	}
+	if string(x.([]byte)) != d.String() {
+		t.Errorf("failed to return %s, got %s", d, x)
+	}
+}
+
+func TestNullScan(t *testing.T) {
+	s := "-12.34"
+	var x interface{} = []byte(s)
+	var d NullDec
+	err := d.Scan(x)
+	if err != nil {
+		t.Errorf("failed to Scan: %s", err.Error())
+	}
+	if d.String() != s {
+		t.Errorf("failed to scan %s, got %s", x, d)
+	}
+	x = nil
+	err = d.Scan(x)
+	if err != nil {
+		t.Errorf("failed to Scan: %s", err.Error())
+	}
+	if !d.Null() {
+		t.Errorf("failed to scan null")
+	}
+}

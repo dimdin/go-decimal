@@ -35,7 +35,7 @@ Output:
 - Can be used directly in database/sql Query and Exec parameters.
 - math/big naming conventions and compatible operators.
 - Arithmetic half up rounding.
-- Test suite with more than 85% code coverage.
+- Test suite with more than 90% code coverage.
 
 ## License
 

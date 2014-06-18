@@ -38,6 +38,21 @@ func TestSetStringErrors(t *testing.T) {
 		}
 	}
 }
+
+func TestExp10(t *testing.T) {
+	var scale uint8
+	var sd Int128
+	sd.Set(intOne)
+	for scale = 0; scale < 15; scale++ {
+		d := exp10(scale)
+		if sd.Cmp(d) != 0 {
+			t.Errorf("Failed for scale %d, expected %s got %s",
+				scale, sd, d)
+		}
+		sd.Mul(&sd, intTen)
+	}
+}
+
 func TestSign(t *testing.T) {
 	values := []struct {
 		x string

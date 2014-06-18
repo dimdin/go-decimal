@@ -33,7 +33,7 @@ Output:
 - Panics when there is an overflow
 - Can be scanned directly from database/sql query results.
 - Can be used directly in database/sql Query and Exec parameters.
-- math/big naming conventions and compatible operators.
+- Methods are in the math/big form `func (z *Dec) Op(x, y *Dec) *Dec` with the result as receiver.
 - Arithmetic half up rounding.
 - Test suite with more than 90% code coverage.
 

@@ -331,7 +331,7 @@ func divmod(xu, xv, xq, xr *Int128) {
 	v[0] <<= shift
 
 	var b uint64 = 1 << 32
-	var qhat, rhat, k, t, p uint64
+	var qhat, rhat uint64
 
 	// D2. Initialize j. D7. Loop on j.
 	for j := 4 - n; j >= 0; j-- {
@@ -352,25 +352,27 @@ func divmod(xu, xv, xq, xr *Int128) {
 		// D4. Multiply and subtract.
 		// u = u - qhat*v
 		// M3. Initialize i.
+		var p uint64
+		var k, t int64
 		k = 0
 		for i := 0; i < n; i++ {
 			// M4. Multiply and subtract.
 			p = qhat * uint64(v[i])
-			t = uint64(u[i+j]) - k - (p & mask)
+			t = int64(u[i+j]) - k - int64(p&mask)
 			u[i+j] = uint32(t & mask)
-			k = p>>32 - t>>32
+			k = int64(p>>32) - t>>32
 		}
-		var test int64 = int64(u[j+n]) - int64(k)
+		t = int64(u[j+n]) - k
 		u[j+n] = uint32(t & mask)
 		// D5. Test remainder.
 		q[j] = uint32(qhat)
-		if test < 0 {
+		if t < 0 {
 			// D6. Add back.
 			q[j]--
 			// add v to u
 			k = 0
 			for i := 0; i < n; i++ {
-				t = uint64(u[i+j]) + uint64(v[i]) + k
+				t = int64(u[i+j]) + int64(v[i]) + k
 				u[i+j] = uint32(t & mask)
 				k = t >> 32
 			}

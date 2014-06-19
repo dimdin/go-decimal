@@ -432,7 +432,8 @@ func TestDivision(t *testing.T) {
 		{0x00007899, 0x0000bcde, 0x0000789a, 0x0000bcde, 0, 0, 0x00007899, 0x0000bcde}, //16
 		{0x0000ffff, 0x0000ffff, 0x0000ffff, 0x0000ffff, 1, 0, 0, 0},                   //17
 		{0x0000ffff, 0x0000ffff, 0x00000000, 0x00000001, 0x0000ffff, 0, 0x0000ffff, 0}, //18
-		//		{0, 0x80000000, 1, 0x40000000, 1, 0, 0xffffffff, 0x3fffffff},
+		{0x7FFF, 0x800000000000, 0x800000000001, 0, 0xfffffffffffe0000, 0, 0x27fff, 0}, // refine qhat case
+		{0, 0x80000000, 1, 0x40000000, 1, 0, 0xFFFFFFFFFFFFFFFF, 0x3FFFFFFF},           // add back case
 	}
 	for i, a := range values {
 		var u, v, q, r Int128
@@ -443,8 +444,8 @@ func TestDivision(t *testing.T) {
 		q.DivMod(&u, &v, &r)
 		if q.lo != a.qlo || q.hi != int64(a.qhi) ||
 			r.lo != a.rlo || r.hi != int64(a.rhi) {
-			t.Errorf("Failed %d %s / %s got q=%s r=%s", i,
-				u, v, q, r)
+			t.Errorf("Failed %d %s / %s got q=%s(%x|%x) r=%s(%x|%x)", i,
+				u, v, q, q.lo, q.hi, r, r.lo, r.hi)
 		}
 	}
 

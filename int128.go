@@ -358,7 +358,7 @@ func divmod(xu, xv, xq, xr *Int128) {
 			p = qhat * uint64(v[i])
 			t = uint64(u[i+j]) - k - (p & mask)
 			u[i+j] = uint32(t & mask)
-			k = (p >> 32) - t>>32
+			k = p>>32 - t>>32
 		}
 		var test int64 = int64(u[j+n]) - int64(k)
 		u[j+n] = uint32(t & mask)

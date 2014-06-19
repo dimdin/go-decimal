@@ -30,7 +30,7 @@ Output:
 
 - 38 decimal digits precision implemented with an 128 bit integer scaled by a power of ten.
 - Fast addition, subtraction, multiplication, division and power operations.
-- Panics when there is an overflow
+- Arithmetic overflow detection that panics.
 - Can be scanned directly from database/sql query results.
 - Can be used directly in database/sql Query and Exec parameters.
 - Methods are in the math/big form `func (z *Dec) Op(x, y *Dec) *Dec` with the result as receiver.

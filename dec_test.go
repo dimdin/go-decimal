@@ -17,7 +17,7 @@ func TestPi(t *testing.T) {
 	if d.String() != pi {
 		t.Errorf("Failed, expected %s got %s", pi, d.String())
 	}
-	if !panics(func() {
+	if "Arithmetic overflow" != panics(func() {
 		d.SetString(pi + "0")
 	}) {
 		t.Errorf("Failed to overflow with 39 digits pi")

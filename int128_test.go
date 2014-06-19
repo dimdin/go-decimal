@@ -432,6 +432,7 @@ func TestDivision(t *testing.T) {
 		{0x00007899, 0x0000bcde, 0x0000789a, 0x0000bcde, 0, 0, 0x00007899, 0x0000bcde}, //16
 		{0x0000ffff, 0x0000ffff, 0x0000ffff, 0x0000ffff, 1, 0, 0, 0},                   //17
 		{0x0000ffff, 0x0000ffff, 0x00000000, 0x00000001, 0x0000ffff, 0, 0x0000ffff, 0}, //18
+		//		{0, 0x80000000, 1, 0x40000000, 1, 0, 0xffffffff, 0x3fffffff},
 	}
 	for i, a := range values {
 		var u, v, q, r Int128
@@ -490,18 +491,16 @@ func TestIntPower(t *testing.T) {
 	}
 }
 
-func panics(f func()) (b bool) {
+func panics(f func()) (r interface{}) {
 	defer func() {
-		if r := recover(); r != nil {
-			b = true
-		}
+		r = recover()
 	}()
 	f()
 	return
 }
 
 func TestMulOverflow(t *testing.T) {
-	if !panics(func() {
+	if "Arithmetic overflow" != panics(func() {
 		var x Int128
 		x.Set(intOne)
 		for i := 0; i <= 38; i++ {
@@ -513,7 +512,7 @@ func TestMulOverflow(t *testing.T) {
 }
 
 func TestDivZero(t *testing.T) {
-	if !panics(func() {
+	if "Division by zero" != panics(func() {
 		var x, y Int128
 		x.Set(intOne)
 		x.Div(&x, &y)
@@ -523,7 +522,7 @@ func TestDivZero(t *testing.T) {
 }
 
 func TestAddOverflow(t *testing.T) {
-	if !panics(func() {
+	if "Arithmetic overflow" != panics(func() {
 		var x Int128
 		x.lo = math.MaxUint64
 		x.hi = math.MaxInt64
@@ -534,7 +533,7 @@ func TestAddOverflow(t *testing.T) {
 }
 
 func TestSubOverflow(t *testing.T) {
-	if !panics(func() {
+	if "Arithmetic overflow" != panics(func() {
 		var x Int128
 		x.lo = 0
 		x.hi = math.MinInt64

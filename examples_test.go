@@ -6,6 +6,28 @@ package decimal
 
 import "fmt"
 
+func Example() {
+	// 100000 at 6.5% for 20 years => 352364.51
+	var total, rate Dec
+	total.SetString("100000")
+	rate.SetString("6.5")
+
+	var one, hundred Dec
+	hundred.SetInt64(100)
+	one.SetInt64(1)
+
+	// rate = (1 + rate/100)**20
+	rate.Div(&rate, &hundred, 3)
+	rate.Add(&rate, &one)
+	rate.Power(&rate, 20)
+
+	total.Mul(&total, &rate)
+	total.Round(2)
+	fmt.Println(total)
+	// Output:
+	// 352364.51
+}
+
 func ExampleDec_Cmp() {
 	var x, y Dec
 	x.SetString("1.1")

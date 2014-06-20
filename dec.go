@@ -204,7 +204,7 @@ func (d *Dec) Round(scale uint8) *Dec {
 	return d.Div(d, decOne, scale)
 }
 
-// Power sets d = x^n and returns d
+// Power sets d = x**n and returns d
 func (d *Dec) Power(x *Dec, n int) *Dec {
 	if n < 0 {
 		scale := x.scale
@@ -214,14 +214,20 @@ func (d *Dec) Power(x *Dec, n int) *Dec {
 		return d.Set(decOne)
 	} else if n == 1 {
 		return d.Set(x)
-	} else if (n & 1) == 0 { // even
+	} else if (n & 1) == 0 { // n even
 		d.Mul(x, x)
+		if d.scale > 18 {
+			d.Round(18)
+		}
 		return d.Power(d, n/2)
 	}
-	// odd
+	// n odd
 	var z Dec
 	z.Set(x)
 	d.Mul(x, x)
+	if d.scale > 18 {
+		d.Round(18)
+	}
 	d.Power(d, (n-1)/2)
 	return d.Mul(d, &z)
 }

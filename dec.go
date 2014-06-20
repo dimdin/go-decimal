@@ -21,7 +21,13 @@ type Dec struct {
 	scale uint8
 }
 
-var decOne = &Dec{Int128{1, 0}, 0}
+func New(n int64) *Dec {
+	d := new(Dec)
+	d.SetInt64(n)
+	return d
+}
+
+var decOne = New(1)
 
 // Set sets d to x and returns d.
 func (d *Dec) Set(x *Dec) *Dec {

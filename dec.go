@@ -368,6 +368,9 @@ func (d Dec) Float64() float64 {
 
 // Scan implements the database Scanner interface.
 func (d *Dec) Scan(value interface{}) error {
+	if value == nil {
+		return errors.New("Cannot Scan null into Dec")
+	}
 	switch value := value.(type) {
 	case []byte:
 		return d.SetBytes(value)
@@ -379,7 +382,7 @@ func (d *Dec) Scan(value interface{}) error {
 	case float64:
 		return d.SetFloat64(value)
 	default:
-		panic("invalid type")
+		return errors.New("Invalid type Scan into Dec")
 	}
 }
 

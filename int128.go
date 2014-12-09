@@ -264,12 +264,14 @@ func (z *Int128) Mul(x, y *Int128) *Int128 {
 		z.hi = 0
 		return z
 	}
-	var u, v Int128
+	var u, v, w Int128
 	u.Abs(x)
 	v.Abs(y)
-	mul(&u, &v, z)
+	mul(&u, &v, &w)
 	if (x.Sign() < 0) != (y.Sign() < 0) {
-		z.Neg(z)
+		z.Neg(&w)
+	} else {
+		*z = w
 	}
 	return z
 }

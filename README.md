@@ -3,6 +3,8 @@ decimal
 
 go decimal package suitable for financial and monetary calculations
 
+[![Build Status](https://travis-ci.org/dimdin/decimal.svg?branch=master)](https://travis-ci.org/dimdin/decimal)
+
 ## Installation
 
     go get github.com/dimdin/decimal
